@@ -1,120 +1,247 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// frontend/src/App.jsx
+
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { useEffect, useState } from "react"
+
+import MainDashboard from "./pages/MainDashboard"
+import RelayPage from "./pages/RelayPage"
+import CameraPage from "./pages/CameraPage"
+import MediaPage from "./pages/MediaPage"
+import NavPage from "./pages/NavPage"
+
+import DimOverlay from "./components/DimOverlay"
+import BootScreen from "./components/BootScreen"
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  /* DIM */
+
+  const [dimMode, setDimMode] = useState(0)
+
+  /* BOOT */
+
+  const [bootFinished, setBootFinished] = useState(() => {
+
+    return sessionStorage.getItem("bootFinished") === "true"
+
+  })
+
+  /* REVERSE CAMERA */
+
+  const [reverseActive, setReverseActive] = useState(false)
+
+  /* KEYBOARD TEST */
+
+  useEffect(() => {
+
+    const handleKey = (e) => {
+
+      /* REVERSE ON */
+
+      if (e.key === "r" || e.key === "R") {
+
+        setReverseActive(true)
+      }
+    }
+
+    window.addEventListener("keydown", handleKey)
+
+    return () => {
+      window.removeEventListener("keydown", handleKey)
+    }
+
+  }, [])
+
+  /* BOOT */
+
+  useEffect(() => {
+
+    if (!bootFinished) {
+
+      const timer = setTimeout(() => {
+
+        sessionStorage.setItem("bootFinished", "true")
+
+        setBootFinished(true)
+
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+
+  }, [bootFinished])
+
+  /* DIM */
+
+  const handleDim = () => {
+
+    if (dimMode === 0) {
+
+      setDimMode(1)
+    }
+
+    else if (dimMode === 1) {
+
+      setDimMode(2)
+    }
+
+    else {
+
+      setDimMode(0)
+    }
+  }
+
+  const wakeUp = () => {
+
+    setDimMode(0)
+  }
+
+  /* BOOT */
+
+  if (!bootFinished) {
+
+    return <BootScreen />
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+
+      <BrowserRouter>
+
+        <Routes>
+
+          <Route
+            path="/"
+            element={
+              <MainDashboard
+                onDim={handleDim}
+              />
+            }
+          />
+
+          <Route
+            path="/relays"
+            element={
+              <RelayPage
+                onDim={handleDim}
+              />
+            }
+          />
+
+          <Route
+            path="/cameras"
+            element={
+              <CameraPage
+                onDim={handleDim}
+              />
+            }
+          />
+
+          <Route
+            path="/media"
+            element={
+              <MediaPage
+                onDim={handleDim}
+              />
+            }
+          />
+
+          <Route
+            path="/nav"
+            element={
+              <NavPage
+                onDim={handleDim}
+              />
+            }
+          />
+
+        </Routes>
+
+      </BrowserRouter>
+
+      {/* GLOBAL REVERSE CAMERA */}
+
+      {reverseActive && (
+
+        <div
+          onClick={() => setReverseActive(false)}
+          className="fixed inset-0 z-[9998] bg-black flex items-center justify-center text-cyan-400 cursor-pointer"
         >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+          {/* Glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#0ff2_0%,#000_70%)] opacity-20" />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          {/* Static */}
+          <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_bottom,transparent_50%,rgba(255,255,255,0.08)_51%)] bg-[length:100%_3px]" />
+
+          {/* Warning */}
+          <div className="absolute top-20 text-4xl text-yellow-400 tracking-[8px] animate-pulse">
+
+            REAR CAMERA ACTIVE
+
+          </div>
+
+          {/* Feed */}
+          <div className="w-[92%] h-[92%] border border-cyan-400 rounded-3xl relative overflow-hidden shadow-[0_0_40px_#00ffff80]">
+
+            {/* Motion */}
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(0,255,255,0.1), transparent)",
+                animation: "cameraMotion 6s linear infinite"
+              }}
+            />
+
+            {/* Camera Name */}
+            <div className="absolute inset-0 flex items-center justify-center text-8xl tracking-[10px] text-cyan-300/70">
+
+              REAR CAMERA
+
+            </div>
+
+            {/* LIVE */}
+            <div className="absolute top-6 right-6 text-3xl text-green-400">
+
+              ● LIVE
+
+            </div>
+
+            {/* REC */}
+            <div className="absolute bottom-6 right-6 text-3xl text-red-500 animate-pulse">
+
+              ● REC
+
+            </div>
+
+            {/* SIGNAL */}
+            <div className="absolute bottom-6 left-6 text-2xl text-cyan-300">
+
+              SIGNAL ▰▰▰▰
+
+            </div>
+
+            {/* TOUCH INFO */}
+            <div className="absolute top-6 left-6 text-xl text-cyan-300/70">
+
+              TOUCH SCREEN TO EXIT
+
+            </div>
+
+          </div>
+
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      )}
+
+      {/* DIM */}
+
+      <DimOverlay
+        mode={dimMode}
+        wakeUp={wakeUp}
+      />
+
     </>
   )
 }
