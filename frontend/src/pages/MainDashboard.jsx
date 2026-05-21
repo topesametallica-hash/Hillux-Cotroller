@@ -86,7 +86,6 @@ export default function MainDashboard({ onDim }) {
           <div className="absolute inset-20 rounded-full border border-cyan-500/20" />
           <div className="absolute inset-32 rounded-full border border-cyan-500/20" />
 
-          {/* Sweep */}
           <div
             className="absolute left-1/2 top-1/2 w-1 h-64 origin-bottom rounded-full"
             style={{
@@ -96,7 +95,6 @@ export default function MainDashboard({ onDim }) {
             }}
           />
 
-          {/* Center */}
           <div
             className="absolute left-1/2 top-1/2 w-5 h-5 -translate-x-1/2 -translate-y-1/2 bg-cyan-400 rounded-full"
             style={{
@@ -110,35 +108,32 @@ export default function MainDashboard({ onDim }) {
       </div>
 
       {/* BUTTONS */}
-      <div className="absolute bottom-20 left-0 w-full flex justify-center gap-8 z-10">
+      <div className="absolute bottom-16 left-0 w-full z-10 flex justify-center">
 
-        <a
-          href="/relays"
-          className="w-64 h-32 border border-cyan-400 rounded-3xl text-4xl tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 shadow-[0_0_30px_#00ffff80] flex items-center justify-center cursor-pointer"
-        >
-          RELAYS
-        </a>
+        <div className="grid grid-cols-4 gap-6">
 
-        <a
-          href="/cameras"
-          className="w-64 h-32 border border-cyan-400 rounded-3xl text-4xl tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 shadow-[0_0_30px_#00ffff80] flex items-center justify-center cursor-pointer"
-        >
-          CAMS
-        </a>
+          {[
+  ["RELAYS", "/relays"],
+  ["CAMS", "/cameras"],
+  ["MEDIA", "/media"],
+  ["NAV", "/nav"],
+  ["VEHICLE", "/vehicle"],
+  ["STATUS", "/status"],
+  ["LOGS", "/logs"],
+  ["SETTINGS", "/settings"],
+].map(([label, path]) => (
 
-        <a
-          href="/media"
-          className="w-64 h-32 border border-cyan-400 rounded-3xl text-4xl tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 shadow-[0_0_30px_#00ffff80] flex items-center justify-center cursor-pointer"
-        >
-          MEDIA
-        </a>
+            <a
+              key={label}
+              href={path}
+              className="w-56 h-24 border border-cyan-400 rounded-3xl text-2xl tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 shadow-[0_0_30px_#00ffff80] flex items-center justify-center cursor-pointer"
+            >
+              {label}
+            </a>
 
-        <a
-          href="/nav"
-          className="w-64 h-32 border border-cyan-400 rounded-3xl text-4xl tracking-widest hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 shadow-[0_0_30px_#00ffff80] flex items-center justify-center cursor-pointer"
-        >
-          NAV
-        </a>
+          ))}
+
+        </div>
 
       </div>
 
